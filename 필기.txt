@@ -1,0 +1,860 @@
+Linux
+- Docker 수업
+- AWS 수업
+- CI-CD 수업
+
+
+Linux
+- 오픈 소스 기반으로 만들어진 유닉스 계열 운영체제
+- 리누스 토발즈(1991년?) > 리눅스 운영체제(커널) 개발
+
+
+리눅스 배포판
+- 커널: 핵심 기능 + 편의성/기능 부족
+- 커널 + 여러가지 추가 프로그램 > 패킹 > 배포판
+
+1. 데비안(Debian) 계열
+    - 우분투(Ubuntu), 리눅스 민트(Linux Mint), 칼리 리눅스(Kali Linux)
+
+2. 레드햇(Red Hat) 계열
+    - 레드햇 엔터프라이즈 리눅스(RHEL), CentOS
+
+3. 슬랙웨어(Slackware) 계열
+    - 슬랙웨어, SuSE/openSuSE
+
+4. 안드로이드 계열
+
+
+-----------------------------------------------------------
+
+Ubuntu 실습 방법?
+
+1. PC 직접 설치
+2. 가상 머신(VirtualBox, VMWare) 설치
+--------
+3. 도커 > 컨테이너
+4. WSL2(Windows Subsystem for Linux) > 윈도우 기능(리눅스 환경 제공)
+5. 클라우드 서버(AWS, Azure, Google Cloud)
+
+
+
+-----------------------------------------------------------------
+
+WSL2 설치하기
+
+1. windows 기능 켜기/끄기
+    - Linux용 Windows 하위 시스템(v)
+    - 가상 머신 플랫폼(Virtual Machine Platform)(v)
+    - Hyper-V(v)
+
+2. cmd 실행
+    - $ wsl --update
+
+3. 리눅스 배포판 설치하기
+    - MS Store > "ubuntu"
+    - Ubuntu 20.04 LTS
+    - Ubuntu 22.04 LTS
+    - Ubuntu 24.04 LTS
+    - Ubuntu 26.04 LTS
+
+4. 실행
+    - 시작 > 프로그램 > Ubuntu
+    - cmd > wsl
+    
+    - wsl --list
+    - wsl --install //최신 버전 LTS 설치
+    - wsl --install <배포판 버전>
+
+    - Create a default Unix user account: ubuntu
+    - New password: java1234
+    - Retype new password: java1234
+
+
+
+-----------------------------------------------------------------
+
+터미널
+- ubuntu@DESKTOP-6TTRTK5:/mnt/c/Users/in$ 
+- 유저명@컴퓨터명:현재경로
+
+
+$ vi ~/.bashrc
+
+
+
+Shell, 쉘
+- 여러종류의 쉘이 있다.
+
+- Bourne Shell(sh)
+    - 유닉스에 최초로 사용된 표준 쉘
+    - sh 명령어
+    - 단순하고 가볍다. 기능이 적다.
+
+- Bash(Bourne Again Shell)
+    - 리눅스에서 가장 많이 사용하는 기본 쉘
+
+- zsh(Z Shell)
+    - bash 모든 기능 + 자동 완성, 테마, 플러그인 등 제공
+    - macOS
+
+
+
+
+
+리눅스 파일 시스템 > 구조
+
+- /home: 사용자(계정) 폴더
+- /etc: 시스템 설정. 잘못 건드리면 시스템 불안정
+- /usr: Unix System Resources. 애플리케이션나 라이브러리 등을 관리
+        - 톰캣, JDK > 사용자가 직접 설치하는 경우
+- /opt: Optional. 애플리케이션나 라이브러리 등을 관리
+        - 대형 소프트웨어 or 상용 소프트웨어
+- /root: 관리자(root) 계정의 홈 디렉토리
+- /var: Variable. 가변 데이터
+        - 로그, 이메일, 임시 파일 등.. 자주 변경되는 데이터
+- /mnt: Mount. 리눅스가 외부 저장소를 연결해놓은 디렉터리
+
+
+-----------------------------------------------------------------
+
+리눅스 명령어
+
+1. pwd, Print Working Directory
+- $ pwd
+- 현재 작업 중인 디렉토리의 경로를 출력
+
+- WSL2 사용 중 > $ explorer.exe .
+
+
+
+2. ls, List
+- $ ls [옵션] [경로]
+
+- 디렉토리의 파일/폴더 목록을 출력
+
+- $ ls -l: 상세 정보까지 출력(long)
+- $ ls -a: 숨긴 파일/폴더까지 출력(all)
+- $ ls -al
+- $ ls -la
+
+- 출력 결과 의미
+    a. l rwx rwx rwx > 777
+       d rwx rwx rwx
+       - rwx rwx rwx
+
+       첫번째 문자: 파일 유형
+        - '-': 일반 파일
+        - 'd': 디렉터리
+        - 'l': 심볼릭 링크
+
+       2~4번째 문자: 소유자(User) 권한
+       5~7번째 문자: 그룹(Group) 권한
+       8~10번째 문자: 기타 사용자(Other) 권한
+
+    b. 소유자(Owner): 파일/디렉토리 소유. 파일/디렉토리를 직접 만들었거나, 소유권을 가지고 있는 유저
+    c. 그룹(Group): 계정의 집합
+
+
+    d rwx r-x r-x aaa
+    - rw- r-- r-- 테스트.txt
+
+    권한(Permission)
+    - 파일/디렉터리에 대해 누가 + 어떤 작업이 가능한지에 대한 정책
+    - 루트(root) 사용자가 변경한다.
+    - 읽기(r, 4): 파일(내용 읽기), 폴더(내용 열람)
+    - 쓰기(w, 2): 파일(내용 수정), 폴더(새파일 생성/삭제)
+    - 실행(x, 1): 파일(실행), 폴더(접근)
+    - rw- > 읽기+쓰기 > 4 + 2 > 6
+    - rwx > 읽기+쓰기+실행 > 4 + 2 + 1> 7
+    - r-x > 읽기+실행 > 4 + 1 > 5
+    - 2^0 = 1 1
+    - 2^1 = 2 0
+    - 2^2 = 4 0
+    - 2^3 = 8 1
+
+
+3. cd, Change Directory
+- $ cd [디렉터리 경로]
+- $ cd 폴더명   # 자식 폴더로 이동
+- $ cd ..       # 부모 폴더
+- $ cd /        # 루트 폴더
+- $ cd ~        # 홈 디렉터리
+- $ cd          # 홈 디렉터리
+- $ cd -        # 이전 폴더
+
+
+4. mkdir, Maker Directory
+- $ mkdir [옵션] [디렉터리명]
+- 디렉터리 생성
+- $ mkdir aaa
+- $ mkdir -p bbb/ccc/ddd  # parents
+
+
+5. history
+- $ history [개수]
+- 명령어 이력을 출력한다.
+
+- 출력 결과 > 번호
+- $ !번호 # 재실행
+
+
+6. touch
+- $ touch [파일명]
+- 빈 파일을 생성하는 명령어
+- $ touch aaa.txt
+- $ touch bbb.txt ccc.txt ddd.txt
+
+
+
+7. rm, Romove
+- $ rm [옵션] [파일]
+- $ rm -r [디렉터리]
+- $ rmdir [디렉터리]
+
+- 파일 삭제: 현재 디렉터리에 쓰기(w) 권한이 필요
+- 폴더 삭제: 빈폴더만 삭제 가능
+
+$ rm aaa.txt
+$ rm aaa
+$ rmdir aaa
+
+
+파일 삭제
+$ rm aaa.txt        # 파일 삭제
+$ rm -f aaa.txt     # -f. Force
+
+폴더 삭제
+$ rmdir aaa         # 빈폴더 삭제
+$ rm -r aaa         # 내용없는 폴더 삭제
+$ rm -r aaa         # 내용있는 폴더 삭제
+$ rm -R aaa         # 내용있는 폴더 삭제
+$ rm -rf aaa        # 내용있는 폴더 강제 삭제
+
+
+
+8. mv, Move
+- $ mv [옵션] [원본] [대상]
+- 파일/디렉터리 이동 or 이름변경
+
+- $ mv ccc.txt bbb
+- $ mv ccc.txt bbb/ccc.txt
+
+- $ mv ddd.txt eee.txt
+- $ mv eee.txt ccc.txt      # 덮어쓰기
+- $ mv -f eee.txt ccc.txt   # 덮어쓰기
+- $ mv -i eee.txt ccc.txt   # 확인 후 덮어쓰기
+
+
+
+9. cp, Copy
+- $ cp [옵션] [원본] [대상]
+- 파일/디렉터리를 복사
+- $ cp -R: 하위 폴더 구조까지 복사
+
+- $ cp 테스트.txt bbb
+
+
+
+10. vi, visual editor > vim
+- 텍스트 편집기
+
+- vi 모드
+    - 명령모드: 명령 단축키 입력 > 그 기능을 실행. 커서 이동, 삭제, 복사, 검색 등..
+    - 입력모드: 텍스트 편집
+    - 명령행모드: 
+
+모드 전환
+- 명령 모드 - i > 입력 모드
+- 입력 모드 - esc > 명령 모드
+- 명령 모드 - : > 명령행 모드
+
+
+명령 모드 단축키
+- dd: 현재 라인 삭제
+- u: 명령 취소
+- D: 커서 위치로부터 행의 끝까지 삭제
+- yy: 줄 복사
+- p: 붙여넣기
+
+명령행 모드
+- :q > 프로그램 종료(quit)
+- :w > 저장(write) 기존 파일 열었을때
+- :w aaa.txt > 새파일 저장
+- :wq > 저장 + 종료
+- :q! > 저장없이 종료
+
+
+
+
+11. man, Manual
+- $ man [명령어]
+
+
+
+
+12. echo
+- 텍스트를 터미널에 출력하는 기본 명령어
+- $ echo "안녕하세요." > hello.txt      # 덮어쓰기(create)
+- $ echo "반갑습니다." > hello.txt
+- $ echo "오랫만입니다." >> hello.txt   # 이어쓰기(append)
+
+
+
+
+13. cat, Concatenate
+- $ cat [옵션] [파일명]
+- 1개 이상의 파일을 연결 후 > 출력 or 새 파일 저장
+
+- $ cat hello.txt
+- $ cat 테스트.txt | more
+    - Enter: 한줄씩 아래로
+    - Space bar: 한페이지씩 아래로
+    - q: 종료
+
+
+14. ifconfig
+- 할당된 IP 조회
+
+15. ip addr
+- ifconfig > 최신
+
+16. ps, Proccess Status
+- $ ps -ef
+- $ ps -ef | grep 프로세스명
+- $ ps -ef | grep apache
+- $ ps -ef | grep java
+
+17. kill
+- $ kill <프로세스ID>
+- $ kill 300
+- $ kill -9 300
+
+
+15. apt-get
+- 패키지 관리 도구
+- 관리자 권한이 있어야 실행 가능
+    1. root 로그인
+    2. 잠시 루트 권한을 빌려오기
+
+15.1 apt-get update
+- /etc/apt/sources.list > 갱신
+- $ sudo apt-get update
+
+15.2 apt-get install
+- $ sudo apt-get install net-tools
+
+15.3 apt-get remove
+- $ sudo apt-get remove net-tools
+- 패키지만 삭제
+- 설정파일은 그대로 보관
+
+15.4 apt-get purge
+- $ sudo apt-get purge net-tools
+- 패키지 + 설정파일 삭제
+
+15.5 apt-get autoremove
+- $ sudo apt-get autoremove
+- 더 이상 사용하지 않는 패키지를 삭제한다.
+- 의존성을 체크 > 더 이상 참조되는 않는 패키지를 삭제
+
+15.6 apt-get clean
+- $ sudo apt-get clean
+- 15.5 + 설치 파일 등
+
+
+우분투 패키지 설치하기
+1. apt-get install > 내부적으로 *.deb 다운로드 + 설치
+2. *.deb > 실행
+
+우분투 > 데비안 계열 > *.deb
+
+
+
+
+-----------------------------------------------------------
+
+
+Docker, 도커
+- 애플리케이션을 빠르고 간편하게 배포/실행할 수 있도록 도와주는 컨테이너 기반 가상화 플랫폼
+- 가상 컴퓨터를 만드는 기술(겉모습)
+    - VirtualBox
+    - VMWare
+    - Cloud > AWS EC2
+- 도커는 리눅스 전용 기술이다. > "리눅스 컨테이너 기술"
+    - 리눅스에서만 사용이 가능하다.
+    - 윈도우즈, macOS, Unix 등 > 사용 불가능
+        > 도커 데스크톱 > 리눅스가 아닌 곳에서 리눅스 환경을 만들어서 도커 사용하는 프로그램
+
+
+도커 설치하기
+- 윈도우즈 > 도커 데스크톱 설치하기
+- https://docker.com > AMD64
+
+
+
+도커
+- '데이터 or 프로그램을 격리' 시키는 기술을 제공하는 프로그램
+-'데이터 or 프로그램을 격리' > 단위 > 컨테이너(Container)
+- 도커는 컨테이너를 생성/관리/삭제 등을 하는 프로그램
+
+이미지 생성 or 획득 > 컨테이너를 생성 > 컨테이너(컴퓨터 1대) 운용(***) > 컨테이너 삭제
+
+
+
+
+
+도커 사용
+1. 도커 데스크톱 > GUI + 사용
+2. 터미널 > 명령어 사용 //추천
+
+
+
+
+
+
+도커 명령어 구조
+- 모든 명령은 'docker' 명령어로 시작한다.
+- $ docker [OPTIONS] COMMAND
+
+
+
+
+
+도커 컨테이너 이미지
+- 컨테이너를 생성하는 도구
+- 이미지를 얻는 방법
+    1. 직접 생성
+    2. 다운로드(Docker Hub)
+
+
+
+
+
+이미지 검색하기
+- $ docker search <이미지명>
+- $ docker search httpd # 아파치 웹서버(http daemon)
+
+
+이미지 다운로드
+- $ docker image pull <이미지명>:<태그명>
+- $ docker pull <이미지명>:<태그명>
+
+- 태그명을 작성 안하면 자동으로 최신 버전(latest)을 받는다.
+- $ docker image pull httpd
+- $ docker image pull httpd:latest
+- $ docker image pull httpd:2.4
+- $ docker image pull httpd:2.2
+
+
+
+이미지 목록보기(로컬 저장된)
+- $ docker image ls
+- $ docker images
+
+
+
+이미지 삭제하기
+- $ docker image rm <이미지명>:<태그명>
+- $ docker rmi <이미지명>:<태그명>
+
+- $ docker rmi httpd
+- $ docker rmi httpd:latest
+
+
+
+
+
+
+컨테이너 조작하기
+- 다운로드한 이미지로 컨테이너를 생성할 수 있다.
+
+$ docker [container] create --name <컨테이너명> <이미지명>:<태그명>
+$ docker [container] create <이미지명>:<태그명> # 컨테이너명이 랜덤
+
+# 아파치 이미지 > 컨테이너 생성하기
+$ docker image pull httpd
+$ docker create --name apache httpd
+$ docker create httpd
+
+
+# 컨테이너 상태 확인하기, Proccess Status
+$ docker ps         # 실행 중인 컨테이너 목록
+$ docker ps -a      # 모든 컨테이너 목록
+$ docker ps --all
+
+
+
+# 컨테이너 삭제하기
+$ docker [container] rm <컨테이너명>
+$ docker [container] rm <컨테이너ID>
+$ docker [container] rm -f <컨테이너ID>  //강제 삭제(force)
+
+$ docker rm apache
+$ docker rm 98aa
+
+
+
+
+컨테이너 실행하기
+$ docker [container] start <컨테이너명>
+$ docker [container] start <컨테이너ID>
+
+$ docker start apache
+$ docker ps
+
+
+
+$ docker ps > STATUS(상태)
+- Created: 컨테이너는 생성됐지만, 아직 시작 안함
+- Up 시간: 실행 중. 실행 중인 시간 표시(*****)
+- Exited 코드: 종료 됨(*****)
+- Restarting: 재시작 중..
+- Paused: 일시 중지
+- Dead: 비정상 종료(작동 불가)
+
+
+
+
+# 컨테이너 중지하기
+$ docker [container] stop <컨테이너명>
+$ docker [container] stop <컨테이너ID>
+
+$ docker stop apache
+
+
+
+# 이미 생성된 컨테이너 > 내용물 수정 불가능 > 삭제 > 이미지 수정 후 생성
+# 더 이상 필요없는 컨테이너
+
+# 컨테이너 삭제하기
+$ docker rm apache
+
+
+
+
+컨테이너 실행 모드
+- Attach Mode, Foreground Mode
+    - 컨테이너와 쉘(터미널)에 서로 연결된 상태로 실행
+    - 컨테이너 실행 중에는 해당 쉘(터미널)으로는 다른 작업이 불가능하다.
+- Detached Mode, Background Mode
+    - 컨테이너와 쉘(터미널)에 분리된 상태로 실행
+    - 컨테이너 실행 중이라도 해당 쉘(터미널)으로는 다른 작업 가능하다.
+
+$ docker image pull httpd
+$ docker create --name apache httpd
+
+$ docker start apache > 백그라운드 모드
+$ docker start -d apache > 백그라운드 모드 //운영 중
+$ docker start -a apache > 포그라운드 모드 //개발 중
+
+
+
+*** 자주 사용하는 방법
+- 이미지 다운로드 + 컨테이너 생성 + 컨테이너 실행
+
+# start 명령어 + 기본(백그라운드 모드)
+# run 명령어   + 기본(포그라운드 모드)
+
+# run 명령어
+    - 이미지 다운로드(없으면 다운로드, 있으면 사용)
+    - 컨테이너 생성(동일명 컨테이너 없으면 생성, 있으면 에러)
+    
+$ docker [container] run --name <컨테이너명> <이미지명>:<태그명>
+
+$ docker run --name apache httpd
+$ docker rm apache
+
+$ docker run -d --name apache httpd
+
+
+
+컨테이너 통신
+- 호스트/호스트 외부와 컨테이너간의 네크워크를 설정해야 한다.
+
+# 포트 포워딩
+- 컨테이너를 생성할 때 포트 포워딩 설정을 같이 한다.
+- 컨테이너가 이미 생성된 후로는 포트 포워딩이 불가능하다.
+
+$ docker run -p <호스트 포트번호>:<컨테이너 포트번호> <이미지명>:<태그>
+
+
+$ docker create --name apache -p 80:80 httpd
+$ docker start apache
+
+or
+
+$ docker run --name apache -p 8888:80 httpd  //실행 > 종료
+
+$ docker run -d --name apache2 -p 8888:80 httpd
+
+$ docker run -d --name apache3 -p 8889:80 httpd
+
+
+
+
+
+
+컨테이너 이미 실행 후 > 컨테이너 접근하기
+- 실행 중인 컨테이너는 호스트에서 접근이 가능하다.
+- 컨테이너는 리눅스 운영체제를 사용한다. 
+    > 컨테이너 내부에서 쉘을 사용할 수 있다.
+- 도커 이미지의 대부분이 Debian 계열의 리눅스를 사용한다.(우분투)
+
+$ docker exec [옵션] <컨테이너명> <실행명령어> [명령어 인자]
+$ docker exec [옵션] <컨테이너ID> <실행명령어> [명령어 인자]
+
+
+$ docker run -d --name apache -p 8888:80 httpd
+$ docker ps
+
+$ docker rm -f apache
+
+
+$ docker exec -it apache /bin/bash # 정확한 위치
+$ docker exec -it apache bash      # 알아서 검색 + 실행 
+
+# -i: 키보드 입력 가능
+# -t: 터미널 환경, 실행 결과 출력
+
+
+
+
+# 아파치 이미지 다운로드 > 컨테이너 생성(+포트 포워딩) > 컨테이너 실행 
+    > 서비스 사용 > 컨테이너 종료
+
+# 각각 실행
+$ docker image pull httpd # 아파치 이미지 다운로드
+$ docker image ls # 이미지 목록보기
+$ docker create --name apache -p 8888:80 httpd # 컨테이너 생성
+$ docker ps -a # 컨테이너 목록보기
+$ docker start apache # 컨테이너 실행(Detached)
+# 브라우저 접속 > 아파치 확인
+$ docker stop apache # 컨테이너 중지하기
+$ docker rm apache # 컨테이너 삭제하기
+
+# 한번에 실행(많이 사용)
+$ docker run --name apache -p 8888:80 httpd # 이미지 다운로드 + 컨테이너 생성 + 컨테이너 실행(Attached)
+$ docker run -d --name apache -p 8888:80 httpd # 이미지 다운로드 + 컨테이너 생성 + 컨테이너 실행(Detached)
+# 브라우저 접속 > 아파치 확인
+$ docker stop apache # 컨테이너 중지하기
+$ docker rm apache # 컨테이너 삭제하기
+
+
+
+
+여러개의 컨테이너를 연동하기
+- 각 컨테이너는 자체 내부 IP를 가진다. > 서로간의 IP를 사용해서 식별
+- 각 컨테이너는 같은 네트워크에 속하면 > 서로간의 컨테이너명을 사용해서 식별
+
+네트워크 목록보기
+$ docker network ls
+
+
+네트워크 생성하기
+$ docker network create <네트워크명>
+$ docker network create mynetwork
+
+NETWORK ID     NAME        DRIVER    SCOPE
+352ece9fbc64   bridge      bridge    local
+d80f4536434c   mynetwork   bridge    local
+
+- NAME(bridge)
+    - 기본 네트워크
+    - 컨테이너를 생성하면, 자동으로 이 네트워크에 포함된다.
+    - 컨테이너를 생성할 때 별도의 네트워크를 지정하면, 지정한 네트워크에 포함된다.
+
+
+- DIRVER(bridge)
+    - 가상 공유기 역할
+    - 같은 네트워크 상의 컨테이너간의 연결해주는 역할
+
+
+네트워크 삭제하기
+$ docker network rm <네트워크명>
+$ docker network rm mynetwork
+
+
+
+
+여러 개의 컨테이너를 같은 네트워크에 연동하기
+$ docker network create mynetwork
+
+$ docker run -d --name nginx --network mynetwork nginx
+
+$ docker run -it --name busybox --network mynetwork busybox
+
+# busybox > (접속) > nginx
+
+$ ping nginx
+
+
+$ docker run -it --name busybox busybox
+
+$ docker run -d --name nginx -p 8888:80 nginx
+
+
+
+
+
+
+컨테이너 파일 복사
+- 컨테이너와 호스트간의 파일 복사
+- 드래그 앤 드롭 > 불가능
+- 명령어
+
+# 호스트 > (복사) > 컨테이너
+$ docker cp <호스트 경로><컨테이너명>:<컨테이너 경로>
+
+# 컨테이너> (복사) > 호스트 
+$ docker cp <컨테이너명>:<컨테이너 경로><호스트 경로>
+
+
+
+아파치 컨테이너 실행 > 호스트에서 index.html 생성 > 컨테이너에 복사
+
+# index.html 생성하기
+
+# 아파치 컨테이너 생성하기
+$ docker run -d --name apache -p 8888:80 httpd
+
+# 파일 복사하기(VS Code > Ctrl + `)
+$ docker cp ./index.html apache:/usr/local/apache2/htdocs
+
+
+
+$ docker cp apache:/usr/local/apache2/htdocs/index.html ./index2.html
+
+
+
+
+
+
+
+스토리지 마운트(***)
+- 위의 cp 명령어는 결국 컨테이너가 삭제되면 파일도 같이 삭제된다.
+- 결국 컨테이너내의 파일을 보존하려면 > 호스트에 복사를 해야 한다.
+ > 귀찮음 > 편하게 개선 > 스토리지 마운트
+
+- 컨테이너(가상 컴퓨터) + 외장 하드 or 외장 USB 메모리
+- 스토리지 마운트의 목적 > 컨테이너가 삭제되더라도 데이터를 유지(*****)
+
+- 컨테이너를 생성할 때 > 스토리지 마운트를 지정한다.(*****)
+    - 컨테이너를 생성한 이후 > 스토리지 마운트 불가능
+
+- 스토리지 마운트를 하면 컨테이너의 경로의 디렉토리의 모든 상태가 덮어쓰기가 된다.(기존 파일을 모두 강제 삭제된다.) *****
+
+1. 바인드 마운트, Bind Mount > 개발/테스트 데이터 용
+    - 호스트 시스템의 특정 디렉터리를 컨테이너에 마운트한다.
+    - C:\code\dirve 디렉터리 > 바인드 마운트 > 컨테이너의 리눅스의 특정 폴더와 연결시킨다.
+
+2. 불륨 마운트, Volume Mount > 운용 데이터 용
+    - 도커 엔진이 직접 관리하는 저장 공간 > 불륨(Volume)
+    - 도커가 관리하는 외장 하드
+    - 불륨을 특정 컨테이너에 결합(마운트)해서 사용이 가능하다.
+
+
+
+바인드 마운트
+$ docker run -v <호스트 경로>:<컨테이너 경로>
+
+
+# 로컬 경로
+C:\code\dirve
+
+# 컨테이너 생성하기
+$ docker run -it --name busybox -v c:\code\dirve:/home busybox
+
+
+
+
+
+
+아파치 컨테아너 + 로컬 개발 + 바인드 마운트
+
+# 로컬 폴더
+C:\code\drive2
+
+# 아파치 컨테이너 생성 + 포트 포워딩 + 바인드 마운트
+$ docker run -d --name apache -p 8888:80 -v C:\code\drive2:/usr/local/apache2/htdocs httpd:2.2
+
+$ docker run -d --name apache -p 8888:80 -v C:\code\drive2:/usr/local/apache2/htdocs httpd
+
+
+
+
+
+불륨 마운트
+
+$docker volume create <불륨명>
+$ docker volume ls
+$ docker volume inspect <불륨명>
+$ docker volume rm <불륨명>
+
+$ docker run -v <불륨명>:<컨테이너 경로>
+
+$ docker volume create myvolume
+$ docker volume rm myvolume
+
+
+$ docker run -it --name busybox -v myvolume:/home/volume busybox
+
+$ vi test.txt
+
+$ docker run -it --name busybox2 -v myvolume:/home/aaa busybox
+
+
+
+
+이미지 생성하기
+- 기존 컨테이너를 이미지로 변환하기(역)
+- Dockerfile 스크립트로 이미지를 생성하기(보편적)
+
+
+Dockerfile 만들기
+- "Dockerfile"
+
+FROM httpd # 베이스 이미지
+COPY ./dir/usr/local/apache2/htdocs/ # 세팅
+EXPOSE 8080 # 도움말
+
+Dockerfile
+- 이미지를 빌드(생성)하는 텍스트 기반 스크립트
+- 베이스 이미지 + 파일 복사 + 시작 명령어 등..
+
+$ docker build -t <이미지명> .
+
+$ docker build -t myapache .
+$ docker build -t myapache:latest .
+$ docker build -t myapache:v1.0.0 .
+
+v1.2.3
+- 1: 메이저 버전(이전 버전과 호환이 안될 수도 있을 정도 큰변화)
+- 2: 마이너 버전(새로운 큰 기능 추가)
+- 3: 패치 버전
+
+$ docker run -d --name apache -p 8888:80 myapache
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
